@@ -4,17 +4,19 @@ import {
   faThumbtack,
   faEllipsisVertical,
 } from "@fortawesome/free-solid-svg-icons"; //Import icon
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { NotesContext } from "../context/NotesContext";
 
 const INITIAL_EDIT_VALUE = { title: false, text: false };
 
-export default function Note({ initialTitle, initialText }) {
+export default function Note({ initialTitle, initialText, id }) {
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(INITIAL_EDIT_VALUE);
   const [title, setTitle] = useState(initialTitle);
   const [text, setText] = useState(initialText);
   const [enteredTitle, setEnteredTitle] = useState(initialTitle);
   const [enteredText, setEnteredText] = useState(initialText);
+  const { handleNoteDelete } = useContext(NotesContext);
 
   const inputTitleRef = useRef(null);
   const inputTextRef = useRef(null);
@@ -130,7 +132,10 @@ export default function Note({ initialTitle, initialText }) {
         />
       )}
 
-      <NoteContextMenu isOpen={isContextMenuOpen} />
+      <NoteContextMenu
+        isOpen={isContextMenuOpen}
+        onDelete={() => handleNoteDelete(id)}
+      />
     </article>
   );
 }

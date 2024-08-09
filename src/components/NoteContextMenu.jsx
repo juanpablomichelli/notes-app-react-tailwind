@@ -1,4 +1,4 @@
-export default function NoteContextMenu({ isOpen }) {
+export default function NoteContextMenu({ isOpen, onDelete }) {
   return (
     <menu
       className={`absolute w-48 bg-gray-200 top-0 right-[-12rem] ${
@@ -15,7 +15,7 @@ export default function NoteContextMenu({ isOpen }) {
         <button>Change Background</button>
       </li>
       <li>
-        <button>Delete Note</button>
+        <button onClick={onDelete}>Delete Note</button>
       </li>
     </menu>
   );
