@@ -21,14 +21,17 @@ export default function Note({ initialTitle, initialText }) {
 
   const handleStopEditing = useCallback(
     (e = null) => {
-      if (e && e.key === "Enter") {
-        isEditing.title && setTitle(enteredTitle);
-        isEditing.text && setText(enteredText);
+      if (e) {
+        if (e.key === "Enter") {
+          isEditing.title && setTitle(enteredTitle);
+          isEditing.text && setText(enteredText);
+          setIsEditing(INITIAL_EDIT_VALUE);
+        }
       } else {
         isEditing.title && setTitle(enteredTitle);
         isEditing.text && setText(enteredText);
+        setIsEditing(INITIAL_EDIT_VALUE);
       }
-      setIsEditing(INITIAL_EDIT_VALUE);
     },
     [enteredTitle, enteredText, isEditing]
   );
@@ -46,7 +49,7 @@ export default function Note({ initialTitle, initialText }) {
   );
 
   const handleStartEdit = useCallback(
-    function handleStartEdit(element) {
+    (element) => {
       setIsEditing((prev) => {
         if (element === "title") return { ...prev, title: true };
         if (element === "text") return { ...prev, text: true };
