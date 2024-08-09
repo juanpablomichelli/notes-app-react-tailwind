@@ -5,7 +5,7 @@ export default function NotesList({ notes }) {
     <ul>
       {notes.map((note) => (
         <li key={note.id}>
-          <Note initialTitle={note.title} text={note.text} />
+          <Note initialTitle={note.title} initialText={note.text} />
         </li>
       ))}
     </ul>

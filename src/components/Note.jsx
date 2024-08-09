@@ -4,25 +4,60 @@ import {
   faThumbtack,
   faEllipsisVertical,
 } from "@fortawesome/free-solid-svg-icons"; //Import icon
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-export default function Note({ initialTitle, text }) {
+const INITIAL_EDIT_VALUE = { title: false, text: false };
+
+export default function Note({ initialTitle, initialText }) {
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(INITIAL_EDIT_VALUE);
   const [title, setTitle] = useState(initialTitle);
-  const [enteredValue, setEnteredValue] = useState(initialTitle);
+  const [text, setText] = useState(initialText);
+  const [enteredTitle, setEnteredTitle] = useState(initialTitle);
+  const [enteredText, setEnteredText] = useState(initialText);
 
-  const inputRef = useRef(null);
-  const titleRef = useRef(null);
+  const inputTitleRef = useRef(null);
+  const inputTextRef = useRef(null);
 
-  // When clicking outside input, isEditing must be set to false
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (inputRef.current && !inputRef.current.contains(e.target)) {
-        console.log("Input exists!");
+  const handleStopEditing = useCallback(
+    (e = null) => {
+      if (e && e.key === "Enter") {
+        isEditing.title && setTitle(enteredTitle);
+        isEditing.text && setText(enteredText);
+      } else {
+        isEditing.title && setTitle(enteredTitle);
+        isEditing.text && setText(enteredText);
+      }
+      setIsEditing(INITIAL_EDIT_VALUE);
+    },
+    [enteredTitle, enteredText, isEditing]
+  );
+
+  const handleClickOutside = useCallback(
+    (e) => {
+      if (
+        (inputTitleRef.current && !inputTitleRef.current.contains(e.target)) ||
+        (inputTextRef.current && !inputTextRef.current.contains(e.target))
+      ) {
         handleStopEditing();
       }
-    };
+    },
+    [handleStopEditing]
+  );
+
+  const handleStartEdit = useCallback(
+    function handleStartEdit(element) {
+      setIsEditing((prev) => {
+        if (element === "title") return { ...prev, title: true };
+        if (element === "text") return { ...prev, text: true };
+      });
+    },
+    [setIsEditing]
+  );
+
+  // When clicking outside input, isEditing must be set to false
+  // 📄 Handle Outside Clicks React https://dev.to/rashed_iqbal/how-to-handle-outside-clicks-in-react-with-typescript-4lmc
+  useEffect(() => {
     document.addEventListener("mouseup", handleClickOutside);
     document.addEventListener("touchend", handleClickOutside);
 
@@ -30,54 +65,44 @@ export default function Note({ initialTitle, text }) {
       document.removeEventListener("mouseup", handleClickOutside);
       document.removeEventListener("touchend", handleClickOutside);
     };
-  }, [handleStopEditing]);
+  }, [handleClickOutside]);
 
-  function handleStartTitleEdit() {
-    setIsEditing(true);
-  }
-  function handleStopEditing(e = null) {
-    if (e) {
-      if (e.key === "Enter" || e.KeyCode === 13) {
-        setTitle(enteredValue);
-        setIsEditing(false);
-      }
-    } else {
-      setTitle(enteredValue);
-      setIsEditing(false);
-    }
-  }
   function handleInputChange(e) {
-    setEnteredValue(e.target.value);
+    const { name, value } = e.target;
+    if (name === "title") setEnteredTitle(value);
+    if (name === "text") setEnteredText(value);
   }
+
   return (
     <article className="relative border-2 border-black max-w-48">
       <header>
-        {!isEditing ? (
+        {!isEditing.title ? (
           <h2
-            ref={titleRef}
-            onClick={handleStartTitleEdit}
-            className={`text-xl ${isEditing ? "hidden" : "block"}`}
+            onClick={() => handleStartEdit("title")}
+            className={`text-xl ${isEditing.title ? "hidden" : "block"}`}
           >
             {title}
           </h2>
         ) : (
           <input
-            ref={inputRef}
+            ref={inputTitleRef}
             onKeyUp={(e) => {
               handleStopEditing(e);
             }}
             onChange={(e) => handleInputChange(e)}
             type="text"
-            value={enteredValue}
+            name="title"
+            value={enteredTitle}
             className={`${isEditing ? "block" : "hidden"}`}
           />
         )}
 
         <nav className="w-full bg-orange-200 flex gap-4">
-          <button>
+          <button aria-label="Pin note">
             <FontAwesomeIcon icon={faThumbtack} />
           </button>
           <button
+            aria-label="Open options menu"
             onClick={() => {
               setIsContextMenuOpen((prev) => !prev);
             }}
@@ -87,7 +112,20 @@ export default function Note({ initialTitle, text }) {
         </nav>
       </header>
 
-      <p>{text}</p>
+      {!isEditing.text ? (
+        <p onClick={() => handleStartEdit("text")}>{text}</p>
+      ) : (
+        <input
+          ref={inputTextRef}
+          onKeyUp={(e) => {
+            handleStopEditing(e);
+          }}
+          onChange={(e) => handleInputChange(e)}
+          type="text"
+          name="text"
+          value={enteredText}
+        />
+      )}
 
       <NoteContextMenu isOpen={isContextMenuOpen} />
     </article>
