@@ -1,9 +1,7 @@
-import { useState } from "react";
 import "./App.css";
 import NoteAdd from "./components/NoteAdd";
 import NotesList from "./components/NotesList";
 import SearchBar from "./components/SearchBar";
-import testNotes from "./test-notes";
 import { NotesProvider } from "./context/NotesContext";
 
 function App() {

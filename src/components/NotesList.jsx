@@ -12,6 +12,7 @@ export default function NotesList() {
             initialTitle={note.title}
             initialText={note.text}
             id={note.id}
+            imgSrc={note.imgSrc}
           />
         </li>
       ))}

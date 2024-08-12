@@ -1,4 +1,9 @@
-export default function NoteContextMenu({ isOpen, onDelete }) {
+export default function NoteContextMenu({
+  isOpen,
+  onDelete,
+  onInsertImage,
+  fileInputRef,
+}) {
   return (
     <menu
       className={`absolute w-48 bg-gray-200 top-0 right-[-12rem] ${
@@ -6,7 +11,13 @@ export default function NoteContextMenu({ isOpen, onDelete }) {
       }`}
     >
       <li>
-        <button>Insert Image</button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+        />
+        <button onClick={onInsertImage}>Insert Image</button>
       </li>
       <li>
         <button>Insert List</button>
