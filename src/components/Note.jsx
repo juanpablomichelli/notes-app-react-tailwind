@@ -1,25 +1,11 @@
 import NoteContextMenu from "./NoteContextMenu";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; //Import component
-import {
-  faThumbtack,
-  faEllipsisVertical,
-} from "@fortawesome/free-solid-svg-icons"; //Import icon
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { NotesContext } from "../context/NotesContext";
+import validFileType from "../utility/validFileType";
+import NoteHeader from "./NoteHeader";
+import NoteContent from "./NoteContent";
 
 const INITIAL_EDIT_VALUE = { title: false, text: false };
-const fileTypes = [
-  "image/apng",
-  "image/bmp",
-  "image/gif",
-  "image/jpeg",
-  "image/pjpeg",
-  "image/png",
-  "image/svg+xml",
-  "image/tiff",
-  "image/webp",
-  "image/x-icon",
-];
 
 export default function Note({ initialTitle, initialText, id, imgSrc }) {
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
@@ -59,6 +45,7 @@ export default function Note({ initialTitle, initialText, id, imgSrc }) {
       ) {
         handleStopEditing();
       }
+      // check if clicking outside contextmenu
     },
     [handleStopEditing]
   );
@@ -73,9 +60,6 @@ export default function Note({ initialTitle, initialText, id, imgSrc }) {
     [setIsEditing]
   );
 
-  function validFileType(file) {
-    return fileTypes.includes(file.type);
-  }
   const createImgUrl = useCallback(
     (e) => {
       const input = e.target;
@@ -136,58 +120,27 @@ export default function Note({ initialTitle, initialText, id, imgSrc }) {
 
   return (
     <article className="relative border-2 border-black max-w-48">
-      <header>
-        {!isEditing.title ? (
-          <h2
-            onClick={() => handleStartEdit("title")}
-            className={`text-xl ${isEditing.title ? "hidden" : "block"}`}
-          >
-            {title}
-          </h2>
-        ) : (
-          <input
-            ref={inputTitleRef}
-            onKeyUp={(e) => {
-              handleStopEditing(e);
-            }}
-            onChange={(e) => handleInputChange(e)}
-            type="text"
-            name="title"
-            value={enteredTitle}
-            className={`${isEditing ? "block" : "hidden"}`}
-          />
-        )}
+      <NoteHeader
+        isEditing={isEditing}
+        handleStartEdit={handleStartEdit}
+        title={title}
+        inputTitleRef={inputTitleRef}
+        handleStopEditing={handleStopEditing}
+        handleInputChange={handleInputChange}
+        enteredTitle={enteredTitle}
+        setIsContextMenuOpen={setIsContextMenuOpen}
+      />
 
-        <nav className="w-full bg-orange-200 flex gap-4">
-          <button aria-label="Pin note">
-            <FontAwesomeIcon icon={faThumbtack} />
-          </button>
-          <button
-            aria-label="Open options menu"
-            onClick={() => {
-              setIsContextMenuOpen((prev) => !prev);
-            }}
-          >
-            <FontAwesomeIcon icon={faEllipsisVertical} />
-          </button>
-        </nav>
-      </header>
-
-      {!isEditing.text ? (
-        <p onClick={() => handleStartEdit("text")}>{text}</p>
-      ) : (
-        <input
-          ref={inputTextRef}
-          onKeyUp={(e) => {
-            handleStopEditing(e);
-          }}
-          onChange={(e) => handleInputChange(e)}
-          type="text"
-          name="text"
-          value={enteredText}
-        />
-      )}
-      {imgSrc && <img src={imgSrc} />}
+      <NoteContent
+        isEditing={isEditing}
+        handleStartEdit={handleStartEdit}
+        text={text}
+        inputTextRef={inputTextRef}
+        handleStopEditing={handleStopEditing}
+        handleInputChange={handleInputChange}
+        enteredText={enteredText}
+        imgSrc={imgSrc}
+      />
 
       <NoteContextMenu
         onInsertImage={handleInsertImage}
