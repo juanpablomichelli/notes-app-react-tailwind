@@ -4,16 +4,16 @@ import {
   faEllipsisVertical,
 } from "@fortawesome/free-solid-svg-icons"; //Import icon
 
-export default function NoteHeader(
-  {isEditing,
+export default function NoteHeader({
+  isEditing,
   handleStartEdit,
   title,
   inputTitleRef,
   handleStopEditing,
   handleInputChange,
   enteredTitle,
-  setIsContextMenuOpen}
-) {
+  OnContextMenuOpen,
+}) {
   return (
     <header>
       {!isEditing.title ? (
@@ -33,7 +33,6 @@ export default function NoteHeader(
           type="text"
           name="title"
           value={enteredTitle}
-          className={`${isEditing ? "block" : "hidden"}`}
         />
       )}
 
@@ -41,12 +40,7 @@ export default function NoteHeader(
         <button aria-label="Pin note">
           <FontAwesomeIcon icon={faThumbtack} />
         </button>
-        <button
-          aria-label="Open options menu"
-          onClick={() => {
-            setIsContextMenuOpen((prev) => !prev);
-          }}
-        >
+        <button aria-label="Open options menu" onClick={OnContextMenuOpen}>
           <FontAwesomeIcon icon={faEllipsisVertical} />
         </button>
       </nav>

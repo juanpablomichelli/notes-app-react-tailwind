@@ -7,34 +7,54 @@ import NoteContent from "./NoteContent";
 
 const INITIAL_EDIT_VALUE = { title: false, text: false };
 
-export default function Note({ initialTitle, initialText, id, imgSrc }) {
-  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(INITIAL_EDIT_VALUE);
-  const [title, setTitle] = useState(initialTitle);
-  const [text, setText] = useState(initialText);
+export default function Note({ note, initialText, initialTitle }) {
+  const [noteState, setNoteState] = useState({
+    isContextMenuOpen: false,
+    isEditing: INITIAL_EDIT_VALUE,
+    enteredTitle: note.title,
+    enteredText: note.text,
+  });
   const [enteredTitle, setEnteredTitle] = useState(initialTitle);
   const [enteredText, setEnteredText] = useState(initialText);
-  const { handleNoteDelete, setNotes } = useContext(NotesContext);
-  const fileInputRef = useRef();
+  const { handleDeleteNote, handleUpdateNote } = useContext(NotesContext);
 
+  const fileInputRef = useRef();
   const inputTitleRef = useRef(null);
   const inputTextRef = useRef(null);
 
+  const handleContextMenuOpen = () => {
+    setNoteState((prev) => {
+      return { ...prev, isContextMenuOpen: !prev.isContextMenuOpen };
+    });
+  };
   const handleStopEditing = useCallback(
     (e = null) => {
+      let isEditing = noteState.isEditing;
       if (e) {
         if (e.key === "Enter") {
-          isEditing.title && setTitle(enteredTitle);
-          isEditing.text && setText(enteredText);
-          setIsEditing(INITIAL_EDIT_VALUE);
+          if (isEditing.title || isEditing.text) {
+            const updatedNote = { ...note };
+            if (isEditing.title) updatedNote.title = enteredTitle;
+            if (isEditing.text) updatedNote.text = enteredText;
+            handleUpdateNote(updatedNote, updatedNote.id);
+          }
+          setNoteState((prev) => {
+            return { ...prev, isEditing: INITIAL_EDIT_VALUE };
+          });
         }
       } else {
-        isEditing.title && setTitle(enteredTitle);
-        isEditing.text && setText(enteredText);
-        setIsEditing(INITIAL_EDIT_VALUE);
+        if (isEditing.title || isEditing.text) {
+          const updatedNote = { ...note };
+          if (isEditing.title) updatedNote.title = enteredTitle;
+          if (isEditing.text) updatedNote.text = enteredText;
+          handleUpdateNote(updatedNote, updatedNote.id);
+        }
+        setNoteState((prev) => {
+          return { ...prev, isEditing: INITIAL_EDIT_VALUE };
+        });
       }
     },
-    [enteredTitle, enteredText, isEditing]
+    [enteredTitle, enteredText, noteState, note, handleUpdateNote]
   );
 
   const handleClickOutside = useCallback(
@@ -50,15 +70,20 @@ export default function Note({ initialTitle, initialText, id, imgSrc }) {
     [handleStopEditing]
   );
 
-  const handleStartEdit = useCallback(
-    (element) => {
-      setIsEditing((prev) => {
-        if (element === "title") return { ...prev, title: true };
-        if (element === "text") return { ...prev, text: true };
-      });
-    },
-    [setIsEditing]
-  );
+  const handleStartEdit = useCallback((element) => {
+    setNoteState((prev) => {
+      if (element === "title")
+        return {
+          ...prev,
+          isEditing: { text: prev.isEditing.text, title: true },
+        };
+      if (element === "text")
+        return {
+          ...prev,
+          isEditing: { title: prev.isEditing.title, text: true },
+        };
+    });
+  }, []);
 
   const createImgUrl = useCallback(
     (e) => {
@@ -72,18 +97,12 @@ export default function Note({ initialTitle, initialText, id, imgSrc }) {
           //create URL from image
           const imgURL = URL.createObjectURL(input.files[0]);
           //create a img property on the Note object and assign this url to it
-          setNotes((prev) => {
-            let updatedNotes = [...prev];
-            let idx = updatedNotes.findIndex((note) => note.id === id);
-            updatedNotes[idx].imgSrc = imgURL;
-            console.log({ ...updatedNotes[idx] });
-            console.log("Image url: " + updatedNotes[idx].imgSrc);
-            return updatedNotes;
-          });
+          let updatedNote = { ...note, imgSrc: imgURL };
+          handleUpdateNote(updatedNote, note.id);
         } else alert(`${input.files[0].name} has an invalid file type`);
       } else alert("No files selected");
     },
-    [id, setNotes]
+    [note, handleUpdateNote]
   );
 
   useEffect(() => {
@@ -118,34 +137,34 @@ export default function Note({ initialTitle, initialText, id, imgSrc }) {
     // then the note will consume that url and render -AFTER the already inserted text -the image if there is any
   }
 
+  const editingProps = {
+    isEditing: noteState.isEditing,
+    handleStartEdit: handleStartEdit,
+    handleStopEditing: handleStopEditing,
+    handleInputChange: handleInputChange,
+  };
   return (
     <article className="relative border-2 border-black max-w-48">
       <NoteHeader
-        isEditing={isEditing}
-        handleStartEdit={handleStartEdit}
-        title={title}
+        {...editingProps}
+        title={note.title}
         inputTitleRef={inputTitleRef}
-        handleStopEditing={handleStopEditing}
-        handleInputChange={handleInputChange}
         enteredTitle={enteredTitle}
-        setIsContextMenuOpen={setIsContextMenuOpen}
+        OnContextMenuOpen={handleContextMenuOpen}
       />
 
       <NoteContent
-        isEditing={isEditing}
-        handleStartEdit={handleStartEdit}
-        text={text}
+        {...editingProps}
+        text={note.text}
         inputTextRef={inputTextRef}
-        handleStopEditing={handleStopEditing}
-        handleInputChange={handleInputChange}
         enteredText={enteredText}
-        imgSrc={imgSrc}
+        imgSrc={note.imgSrc}
       />
 
       <NoteContextMenu
         onInsertImage={handleInsertImage}
-        isOpen={isContextMenuOpen}
-        onDelete={() => handleNoteDelete(id)}
+        isOpen={noteState.isContextMenuOpen}
+        onDelete={() => handleDeleteNote(note.id)}
         fileInputRef={fileInputRef}
       />
     </article>
