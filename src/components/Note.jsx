@@ -150,7 +150,7 @@ export default function Note({ note, initialText, initialTitle }) {
     handleInputChange: handleInputChange,
   };
   return (
-    <article className="relative border-2 border-black max-w-48">
+    <article className="flex flex-col relative border-2 border-black max-w-48">
       <NoteHeader
         {...editingProps}
         title={note.title}
@@ -160,6 +160,7 @@ export default function Note({ note, initialText, initialTitle }) {
       />
 
       <NoteContent
+        className={"flex flex-col gap-4 p-2"}
         {...editingProps}
         text={note.text}
         inputTextRef={inputTextRef}
