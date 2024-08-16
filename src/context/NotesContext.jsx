@@ -6,6 +6,22 @@ export const NotesContext = createContext();
 export const NotesProvider = ({ children }) => {
   const [notes, setNotes] = useState([...testNotes]);
 
+  const handleAddNote = () => {
+    // This can be a note class with a constructor
+    let id = Math.random() * 1000;
+    let newNote = {
+      id: id,
+      title: "Add a title",
+      text: "Add your text here!",
+      pinned: false,
+      background: "",
+      imgSrc: undefined,
+    };
+
+    setNotes((prev) => {
+      return [newNote, ...prev];
+    });
+  };
   const handleDeleteNote = (id) => {
     alert("Note will be deleted! Are you sure you want to continue?");
     setNotes((prev) => {
@@ -27,7 +43,7 @@ export const NotesProvider = ({ children }) => {
 
   return (
     <NotesContext.Provider
-      value={{ notes, handleDeleteNote, handleUpdateNote }}
+      value={{ notes, handleDeleteNote, handleUpdateNote, handleAddNote }}
     >
       {children}
     </NotesContext.Provider>

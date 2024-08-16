@@ -21,6 +21,7 @@ export default function Note({ note, initialText, initialTitle }) {
   const fileInputRef = useRef();
   const inputTitleRef = useRef(null);
   const inputTextRef = useRef(null);
+  const menuRef = useRef(null);
 
   const handleContextMenuOpen = () => {
     setNoteState((prev) => {
@@ -63,9 +64,13 @@ export default function Note({ note, initialText, initialTitle }) {
         (inputTitleRef.current && !inputTitleRef.current.contains(e.target)) ||
         (inputTextRef.current && !inputTextRef.current.contains(e.target))
       ) {
+        //if (menuRef.current) handleCloseContextMenu();
         handleStopEditing();
       }
       // check if clicking outside contextmenu
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        handleCloseContextMenu();
+      }
     },
     [handleStopEditing]
   );
@@ -85,6 +90,12 @@ export default function Note({ note, initialText, initialTitle }) {
     });
   }, []);
 
+  const handleCloseContextMenu = () => {
+    setNoteState((prev) => {
+      return { ...prev, isContextMenuOpen: false };
+    });
+  };
+
   const createImgUrl = useCallback(
     (e) => {
       const input = e.target;
@@ -99,17 +110,12 @@ export default function Note({ note, initialText, initialTitle }) {
           //create a img property on the Note object and assign this url to it
           let updatedNote = { ...note, imgSrc: imgURL };
           handleUpdateNote(updatedNote, note.id);
+          handleCloseContextMenu();
         } else alert(`${input.files[0].name} has an invalid file type`);
       } else alert("No files selected");
     },
     [note, handleUpdateNote]
   );
-
-  useEffect(() => {
-    fileInputRef.current.addEventListener("change", (e) => {
-      createImgUrl(e);
-    });
-  }, [createImgUrl]);
 
   // When clicking outside input, isEditing must be set to false
   // 📄 Handle Outside Clicks React https://dev.to/rashed_iqbal/how-to-handle-outside-clicks-in-react-with-typescript-4lmc
@@ -161,12 +167,16 @@ export default function Note({ note, initialText, initialTitle }) {
         imgSrc={note.imgSrc}
       />
 
-      <NoteContextMenu
-        onInsertImage={handleInsertImage}
-        isOpen={noteState.isContextMenuOpen}
-        onDelete={() => handleDeleteNote(note.id)}
-        fileInputRef={fileInputRef}
-      />
+      {noteState.isContextMenuOpen && (
+        <NoteContextMenu
+          onInsertImage={handleInsertImage}
+          isOpen={noteState.isContextMenuOpen}
+          onDelete={() => handleDeleteNote(note.id)}
+          fileInputRef={fileInputRef}
+          menuRef={menuRef}
+          createImgUrl={createImgUrl}
+        />
+      )}
     </article>
   );
 }
