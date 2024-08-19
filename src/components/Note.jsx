@@ -5,12 +5,9 @@ import validFileType from "../utility/validFileType";
 import NoteHeader from "./NoteHeader";
 import NoteContent from "./NoteContent";
 
-const INITIAL_EDIT_VALUE = { title: false, text: false };
-
 export default function Note({ note, initialText, initialTitle }) {
   const [noteState, setNoteState] = useState({
     isContextMenuOpen: false,
-    isEditing: INITIAL_EDIT_VALUE,
     enteredTitle: note.title,
     enteredText: note.text,
   });
@@ -23,71 +20,21 @@ export default function Note({ note, initialText, initialTitle }) {
   const inputTextRef = useRef(null);
   const menuRef = useRef(null);
 
+  const autoResizeTextArea = useCallback((textarea) => {
+    textarea.style.height = "1.5rem";
+    textarea.style.height = textarea.scrollHeight + "px";
+  }, []);
+
   const handleContextMenuOpen = () => {
     setNoteState((prev) => {
       return { ...prev, isContextMenuOpen: !prev.isContextMenuOpen };
     });
   };
-  const handleStopEditing = useCallback(
-    (e = null) => {
-      let isEditing = noteState.isEditing;
-      if (e) {
-        if (e.key === "Enter") {
-          if (isEditing.title || isEditing.text) {
-            const updatedNote = { ...note };
-            if (isEditing.title) updatedNote.title = enteredTitle;
-            if (isEditing.text) updatedNote.text = enteredText;
-            handleUpdateNote(updatedNote, updatedNote.id);
-          }
-          setNoteState((prev) => {
-            return { ...prev, isEditing: INITIAL_EDIT_VALUE };
-          });
-        }
-      } else {
-        if (isEditing.title || isEditing.text) {
-          const updatedNote = { ...note };
-          if (isEditing.title) updatedNote.title = enteredTitle;
-          if (isEditing.text) updatedNote.text = enteredText;
-          handleUpdateNote(updatedNote, updatedNote.id);
-        }
-        setNoteState((prev) => {
-          return { ...prev, isEditing: INITIAL_EDIT_VALUE };
-        });
-      }
-    },
-    [enteredTitle, enteredText, noteState, note, handleUpdateNote]
-  );
 
-  const handleClickOutside = useCallback(
-    (e) => {
-      if (
-        (inputTitleRef.current && !inputTitleRef.current.contains(e.target)) ||
-        (inputTextRef.current && !inputTextRef.current.contains(e.target))
-      ) {
-        //if (menuRef.current) handleCloseContextMenu();
-        handleStopEditing();
-      }
-      // check if clicking outside contextmenu
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        handleCloseContextMenu();
-      }
-    },
-    [handleStopEditing]
-  );
-
-  const handleStartEdit = useCallback((element) => {
-    setNoteState((prev) => {
-      if (element === "title")
-        return {
-          ...prev,
-          isEditing: { text: prev.isEditing.text, title: true },
-        };
-      if (element === "text")
-        return {
-          ...prev,
-          isEditing: { title: prev.isEditing.title, text: true },
-        };
-    });
+  const handleClickOutside = useCallback((e) => {
+    if (menuRef.current && !menuRef.current.contains(e.target)) {
+      handleCloseContextMenu();
+    }
   }, []);
 
   const handleCloseContextMenu = () => {
@@ -117,7 +64,6 @@ export default function Note({ note, initialText, initialTitle }) {
     [note, handleUpdateNote]
   );
 
-  // When clicking outside input, isEditing must be set to false
   // 📄 Handle Outside Clicks React https://dev.to/rashed_iqbal/how-to-handle-outside-clicks-in-react-with-typescript-4lmc
   useEffect(() => {
     document.addEventListener("mouseup", handleClickOutside);
@@ -138,34 +84,27 @@ export default function Note({ note, initialText, initialTitle }) {
   function handleInsertImage() {
     // Open file picker from <input type"file> using the ref
     fileInputRef.current.click();
-
-    // the idea should be to convert it to a url and pass it as a prop of the note.
-    // then the note will consume that url and render -AFTER the already inserted text -the image if there is any
   }
 
-  const editingProps = {
-    isEditing: noteState.isEditing,
-    handleStartEdit: handleStartEdit,
-    handleStopEditing: handleStopEditing,
-    handleInputChange: handleInputChange,
-  };
   return (
-    <article className="flex flex-col relative border-2 border-black max-w-48">
+    <article className="flex flex-col gap-2 relative border-2 rounded-lg p-2 bg-orange-200 border-black max-w-48">
       <NoteHeader
-        {...editingProps}
+        onChange={handleInputChange}
         title={note.title}
         inputTitleRef={inputTitleRef}
         enteredTitle={enteredTitle}
-        OnContextMenuOpen={handleContextMenuOpen}
+        onContextMenuOpen={handleContextMenuOpen}
+        autoResizeTextArea={autoResizeTextArea}
       />
 
       <NoteContent
-        className={"flex flex-col gap-4 p-2"}
-        {...editingProps}
+        className={"flex flex-col gap-4"}
+        onChange={handleInputChange}
         text={note.text}
         inputTextRef={inputTextRef}
         enteredText={enteredText}
         imgSrc={note.imgSrc}
+        autoResizeTextArea={autoResizeTextArea}
       />
 
       {noteState.isContextMenuOpen && (
