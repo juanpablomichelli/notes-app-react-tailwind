@@ -19,29 +19,28 @@ export default function Note({ note, initialText, initialTitle }) {
   const inputTitleRef = useRef(null);
   const inputTextRef = useRef(null);
   const menuRef = useRef(null);
+  const menuToggleRef = useRef(null);
 
   const autoResizeTextArea = useCallback((textarea) => {
     textarea.style.height = "1.5rem";
     textarea.style.height = textarea.scrollHeight + "px";
   }, []);
 
-  const handleContextMenuOpen = () => {
+  const handleToggleContextMenu = () => {
     setNoteState((prev) => {
       return { ...prev, isContextMenuOpen: !prev.isContextMenuOpen };
     });
   };
 
   const handleClickOutside = useCallback((e) => {
-    if (menuRef.current && !menuRef.current.contains(e.target)) {
-      handleCloseContextMenu();
+    if (
+      menuRef.current &&
+      !menuRef.current.contains(e.target) &&
+      !menuToggleRef.current.contains(e.target)
+    ) {
+      handleToggleContextMenu();
     }
   }, []);
-
-  const handleCloseContextMenu = () => {
-    setNoteState((prev) => {
-      return { ...prev, isContextMenuOpen: false };
-    });
-  };
 
   const createImgUrl = useCallback(
     (e) => {
@@ -57,7 +56,7 @@ export default function Note({ note, initialText, initialTitle }) {
           //create a img property on the Note object and assign this url to it
           let updatedNote = { ...note, imgSrc: imgURL };
           handleUpdateNote(updatedNote, note.id);
-          handleCloseContextMenu();
+          handleToggleContextMenu();
         } else alert(`${input.files[0].name} has an invalid file type`);
       } else alert("No files selected");
     },
@@ -93,8 +92,9 @@ export default function Note({ note, initialText, initialTitle }) {
         title={note.title}
         inputTitleRef={inputTitleRef}
         enteredTitle={enteredTitle}
-        onContextMenuOpen={handleContextMenuOpen}
+        onToggleContextMenu={handleToggleContextMenu}
         autoResizeTextArea={autoResizeTextArea}
+        menuToggleRef={menuToggleRef}
       />
 
       <NoteContent

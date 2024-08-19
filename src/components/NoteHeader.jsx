@@ -9,8 +9,9 @@ export default function NoteHeader({
   onChange,
   inputTitleRef,
   enteredTitle,
-  onContextMenuOpen,
+  onToggleContextMenu,
   autoResizeTextArea,
+  menuToggleRef,
 }) {
   useEffect(() => {
     const textarea = inputTitleRef.current;
@@ -36,7 +37,12 @@ export default function NoteHeader({
         <button aria-label="Pin note">
           <FontAwesomeIcon icon={faThumbtack} />
         </button>
-        <button aria-label="Open options menu" onClick={onContextMenuOpen}>
+        <button
+          id="toggle-menu"
+          aria-label="Open options menu"
+          onClick={onToggleContextMenu}
+          ref={menuToggleRef}
+        >
           <FontAwesomeIcon icon={faEllipsisVertical} />
         </button>
       </nav>
