@@ -13,7 +13,8 @@ export default function Note({ note, initialText, initialTitle }) {
   });
   const [enteredTitle, setEnteredTitle] = useState(initialTitle);
   const [enteredText, setEnteredText] = useState(initialText);
-  const { handleDeleteNote, handleUpdateNote } = useContext(NotesContext);
+  const { handleDeleteNote, handleUpdateNote, handleNewlyAddedNote } =
+    useContext(NotesContext);
 
   const fileInputRef = useRef();
   const inputTitleRef = useRef(null);
@@ -74,6 +75,10 @@ export default function Note({ note, initialText, initialTitle }) {
     };
   }, [handleClickOutside]);
 
+  useEffect(() => {
+    handleNewlyAddedNote();
+  }, [handleNewlyAddedNote]);
+
   function handleInputChange(e) {
     const { name, value } = e.target;
     if (name === "title") setEnteredTitle(value);
@@ -95,6 +100,7 @@ export default function Note({ note, initialText, initialTitle }) {
         onToggleContextMenu={handleToggleContextMenu}
         autoResizeTextArea={autoResizeTextArea}
         menuToggleRef={menuToggleRef}
+        isNewNote={note.isNewNote}
       />
 
       <NoteContent

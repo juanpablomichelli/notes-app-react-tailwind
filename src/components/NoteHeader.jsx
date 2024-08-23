@@ -12,6 +12,7 @@ export default function NoteHeader({
   onToggleContextMenu,
   autoResizeTextArea,
   menuToggleRef,
+  isNewNote,
 }) {
   useEffect(() => {
     const textarea = inputTitleRef.current;
@@ -53,7 +54,9 @@ export default function NoteHeader({
         name="title"
         value={enteredTitle}
         className="w-full outline-none overflow-hidden resize-none bg-orange-200 text-lg"
+        autoFocus={isNewNote}
       />
+      {isNewNote && "blablablal"}
     </header>
   );
 }

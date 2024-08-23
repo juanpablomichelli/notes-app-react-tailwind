@@ -11,16 +11,27 @@ export const NotesProvider = ({ children }) => {
     let id = Math.random() * 1000;
     let newNote = {
       id: id,
-      title: "Add a title",
+      title: "",
       text: "Add your text here!",
       pinned: false,
       background: "",
       imgSrc: undefined,
+      //this needs to be set to false once the note is added because if we persist them, it will get autofocused when we refresh
+      isNewNote: true,
     };
 
     setNotes((prev) => {
       return [newNote, ...prev];
     });
+  };
+
+  const handleNewlyAddedNote = () => {
+    if (notes.length > 0) {
+      const updatedNotes = notes.map((note) => {
+        return note.isNewNote ? { ...note, isNewNote: false } : note;
+      });
+      setNotes(updatedNotes);
+    }
   };
   const handleDeleteNote = (id) => {
     alert("Note will be deleted! Are you sure you want to continue?");
@@ -43,7 +54,13 @@ export const NotesProvider = ({ children }) => {
 
   return (
     <NotesContext.Provider
-      value={{ notes, handleDeleteNote, handleUpdateNote, handleAddNote }}
+      value={{
+        notes,
+        handleDeleteNote,
+        handleUpdateNote,
+        handleAddNote,
+        handleNewlyAddedNote,
+      }}
     >
       {children}
     </NotesContext.Provider>
