@@ -5,5 +5,6 @@ const testNotes = Array.from({ length: 5 }, (v, i) => ({
   pinned: false,
   background: "",
   imgSrc: undefined,
+  isNewNote: false
 }));
 export default testNotes;

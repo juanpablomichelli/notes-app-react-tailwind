@@ -52,17 +52,31 @@ export const NotesProvider = ({ children }) => {
     });
   };
 
+  const handleTogglePin = (id) => {
+    setNotes((prev) => {
+      //search idx of clicked note
+      let idx = prev.findIndex((note) => note.id === id);
+      console.log("id:  " + id + "| idx: " + idx);
+      if (idx >= 0) {
+        let updatedNote = { ...prev[idx], pinned: !prev[idx].pinned };
+        const newNotes = [...prev];
+        newNotes.splice(idx, 1, updatedNote);
+        return [...newNotes];
+      }
+      return prev;
+    });
+  };
+
+  const ctxValue = {
+    notes,
+    handleDeleteNote,
+    handleUpdateNote,
+    handleAddNote,
+    handleNewlyAddedNote,
+    handleTogglePin,
+  };
+
   return (
-    <NotesContext.Provider
-      value={{
-        notes,
-        handleDeleteNote,
-        handleUpdateNote,
-        handleAddNote,
-        handleNewlyAddedNote,
-      }}
-    >
-      {children}
-    </NotesContext.Provider>
+    <NotesContext.Provider value={ctxValue}>{children}</NotesContext.Provider>
   );
 };

@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; //Import component
 import {
   faThumbtack,
+  faThumbTackSlash,
   faEllipsisVertical,
 } from "@fortawesome/free-solid-svg-icons"; //Import icon
 import { useEffect } from "react";
@@ -13,6 +14,8 @@ export default function NoteHeader({
   autoResizeTextArea,
   menuToggleRef,
   isNewNote,
+  onTogglePin,
+  isPinned,
 }) {
   useEffect(() => {
     const textarea = inputTitleRef.current;
@@ -35,8 +38,12 @@ export default function NoteHeader({
   return (
     <header className="flex flex-col gap-2 font-semibold">
       <nav className="flex gap-4 justify-between ">
-        <button aria-label="Pin note">
-          <FontAwesomeIcon icon={faThumbtack} />
+        <button onClick={onTogglePin} aria-label="Pin note">
+          {isPinned ? (
+            <FontAwesomeIcon icon={faThumbTackSlash} />
+          ) : (
+            <FontAwesomeIcon icon={faThumbtack} />
+          )}
         </button>
         <button
           id="toggle-menu"
@@ -56,7 +63,6 @@ export default function NoteHeader({
         className="w-full outline-none overflow-hidden resize-none bg-orange-200 text-lg"
         autoFocus={isNewNote}
       />
-      {isNewNote && "blablablal"}
     </header>
   );
 }
