@@ -6,6 +6,11 @@ export const NotesContext = createContext();
 export const NotesProvider = ({ children }) => {
   const [notes, setNotes] = useState([...testNotes]);
 
+  const getIndex = (array, id) => {
+    let idx = array.findIndex((note) => note.id === id);
+    return idx;
+  };
+
   const handleAddNote = () => {
     // This can be a note class with a constructor
     let id = Math.random() * 1000;
@@ -42,7 +47,7 @@ export const NotesProvider = ({ children }) => {
 
   const handleUpdateNote = (updatedNote, id) => {
     setNotes((prev) => {
-      let idx = prev.findIndex((note) => note.id === id);
+      let idx = getIndex(prev, id);
       if (idx >= 0) {
         const newNotes = [...prev];
         newNotes[idx] = { ...updatedNote };
@@ -55,16 +60,44 @@ export const NotesProvider = ({ children }) => {
   const handleTogglePin = (id) => {
     setNotes((prev) => {
       //search idx of clicked note
-      let idx = prev.findIndex((note) => note.id === id);
-      console.log("id:  " + id + "| idx: " + idx);
+      let idx = getIndex(prev, id);
       if (idx >= 0) {
+        //toggle 'pinned' property
         let updatedNote = { ...prev[idx], pinned: !prev[idx].pinned };
-        const newNotes = [...prev];
-        newNotes.splice(idx, 1, updatedNote);
+        let newNotes = [...prev];
+        newNotes.splice(idx, 1);
+
+        //if pinned, add it to the top of the array | else add it as the last element
+        if (updatedNote.pinned) newNotes.unshift(updatedNote);
+        else newNotes.push(updatedNote);
+
         return [...newNotes];
       }
       return prev;
     });
+  };
+
+  const handleFocusOut = (id) => {
+    if (id) {
+      setNotes((prev) => {
+        let newNotes = [...prev];
+
+        //get note
+        let idx = getIndex(prev, id);
+
+        // is first item in array & there are 1 or more pinned notes
+        const isPinnedNotes =
+          prev.filter((note) => note.pinned !== false).length > 0;
+
+        if (idx === 0 && isPinnedNotes) {
+          //then send the note after the last pinned note
+          const lastIdx = prev.findLastIndex((note) => note.pinned === true);
+          const note = newNotes.shift();
+          newNotes.splice(lastIdx, 0, note);
+          return newNotes;
+        } else return prev;
+      });
+    }
   };
 
   const ctxValue = {
@@ -74,6 +107,7 @@ export const NotesProvider = ({ children }) => {
     handleAddNote,
     handleNewlyAddedNote,
     handleTogglePin,
+    handleFocusOut,
   };
 
   return (

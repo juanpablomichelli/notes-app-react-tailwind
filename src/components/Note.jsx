@@ -18,6 +18,7 @@ export default function Note({ note, initialText, initialTitle }) {
     handleUpdateNote,
     handleNewlyAddedNote,
     handleTogglePin,
+    handleFocusOut,
   } = useContext(NotesContext);
 
   const fileInputRef = useRef();
@@ -70,14 +71,17 @@ export default function Note({ note, initialText, initialTitle }) {
 
   // 📄 Handle Outside Clicks React https://dev.to/rashed_iqbal/how-to-handle-outside-clicks-in-react-with-typescript-4lmc
   useEffect(() => {
+    const noteTitle = inputTitleRef.current;
     document.addEventListener("mouseup", handleClickOutside);
     document.addEventListener("touchend", handleClickOutside);
+    noteTitle.addEventListener("focusout", () => handleFocusOut(note.id));
 
     return () => {
       document.removeEventListener("mouseup", handleClickOutside);
       document.removeEventListener("touchend", handleClickOutside);
+      noteTitle.removeEventListener("focusout", () => handleFocusOut(note.id));
     };
-  }, [handleClickOutside]);
+  }, [handleClickOutside, handleFocusOut]);
 
   useEffect(() => {
     handleNewlyAddedNote();
