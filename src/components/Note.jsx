@@ -53,10 +53,8 @@ export default function Note({ note, initialText, initialTitle }) {
       const input = e.target;
 
       if (input.files.length === 1) {
-        console.log("A file has been selected");
         //Validate file type
         if (validFileType(input.files[0])) {
-          console.log("Valid file type");
           //create URL from image
           const imgURL = URL.createObjectURL(input.files[0]);
           //create a img property on the Note object and assign this url to it
@@ -70,18 +68,6 @@ export default function Note({ note, initialText, initialTitle }) {
   );
 
   // 📄 Handle Outside Clicks React https://dev.to/rashed_iqbal/how-to-handle-outside-clicks-in-react-with-typescript-4lmc
-  useEffect(() => {
-    const noteTitle = inputTitleRef.current;
-    document.addEventListener("mouseup", handleClickOutside);
-    document.addEventListener("touchend", handleClickOutside);
-    noteTitle.addEventListener("focusout", () => handleFocusOut(note.id));
-
-    return () => {
-      document.removeEventListener("mouseup", handleClickOutside);
-      document.removeEventListener("touchend", handleClickOutside);
-      noteTitle.removeEventListener("focusout", () => handleFocusOut(note.id));
-    };
-  }, [handleClickOutside, handleFocusOut]);
 
   useEffect(() => {
     handleNewlyAddedNote();
@@ -89,8 +75,12 @@ export default function Note({ note, initialText, initialTitle }) {
 
   function handleInputChange(e) {
     const { name, value } = e.target;
+    const newNote = { ...note, [name]: value };
+
     if (name === "title") setEnteredTitle(value);
     if (name === "text") setEnteredText(value);
+
+    handleUpdateNote(newNote, note.id);
   }
 
   function handleInsertImage() {

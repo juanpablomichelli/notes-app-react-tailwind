@@ -1,10 +1,22 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import testNotes from "../test-notes";
 
 export const NotesContext = createContext();
+const storage = window.localStorage;
 
 export const NotesProvider = ({ children }) => {
-  const [notes, setNotes] = useState([...testNotes]);
+  const [notes, setNotes] = useState([]);
+
+  useEffect(() => {
+    //check if key exist
+    if (storage.getItem("notes").length > 0) {
+      //set notes
+      const data = JSON.parse(storage.getItem("notes"));
+      setNotes([...data]);
+    } else {
+      storage.setItem("notes", []);
+    }
+  }, []);
 
   const getIndex = (array, id) => {
     let idx = array.findIndex((note) => note.id === id);
@@ -26,7 +38,9 @@ export const NotesProvider = ({ children }) => {
     };
 
     setNotes((prev) => {
-      return [newNote, ...prev];
+      let newNotes = [newNote, ...prev];
+      storage.setItem("notes", JSON.stringify(newNotes));
+      return newNotes;
     });
   };
 
@@ -35,13 +49,18 @@ export const NotesProvider = ({ children }) => {
       const updatedNotes = notes.map((note) => {
         return note.isNewNote ? { ...note, isNewNote: false } : note;
       });
-      setNotes(updatedNotes);
+      setNotes(() => {
+        storage.setItem("notes", JSON.stringify(updatedNotes));
+        return updatedNotes;
+      });
     }
   };
   const handleDeleteNote = (id) => {
     alert("Note will be deleted! Are you sure you want to continue?");
     setNotes((prev) => {
-      return [...prev.filter((note) => note.id !== id)];
+      const updatedNotes = [...prev.filter((note) => note.id !== id)];
+      storage.setItem("notes", JSON.stringify(updatedNotes));
+      return updatedNotes;
     });
   };
 
@@ -51,6 +70,7 @@ export const NotesProvider = ({ children }) => {
       if (idx >= 0) {
         const newNotes = [...prev];
         newNotes[idx] = { ...updatedNote };
+        storage.setItem("notes", JSON.stringify(newNotes));
         return newNotes;
       }
       return prev;
@@ -71,6 +91,7 @@ export const NotesProvider = ({ children }) => {
         if (updatedNote.pinned) newNotes.unshift(updatedNote);
         else newNotes.push(updatedNote);
 
+        storage.setItem("notes", JSON.stringify(newNotes));
         return [...newNotes];
       }
       return prev;
@@ -94,6 +115,7 @@ export const NotesProvider = ({ children }) => {
           const lastIdx = prev.findLastIndex((note) => note.pinned === true);
           const note = newNotes.shift();
           newNotes.splice(lastIdx, 0, note);
+          storage.setItem("notes", JSON.stringify(newNotes));
           return newNotes;
         } else return prev;
       });
