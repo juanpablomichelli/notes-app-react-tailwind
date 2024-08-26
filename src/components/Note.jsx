@@ -4,6 +4,7 @@ import { NotesContext } from "../context/NotesContext";
 import validFileType from "../utility/validFileType";
 import NoteHeader from "./NoteHeader";
 import NoteContent from "./NoteContent";
+import getBase64 from "../utility/convertToBase64";
 
 export default function Note({ note, initialText, initialTitle }) {
   const [noteState, setNoteState] = useState({
@@ -55,12 +56,13 @@ export default function Note({ note, initialText, initialTitle }) {
       if (input.files.length === 1) {
         //Validate file type
         if (validFileType(input.files[0])) {
-          //create URL from image
-          const imgURL = URL.createObjectURL(input.files[0]);
-          //create a img property on the Note object and assign this url to it
-          let updatedNote = { ...note, imgSrc: imgURL };
-          handleUpdateNote(updatedNote, note.id);
-          handleToggleContextMenu();
+          //create base64 from image
+          getBase64(input.files[0], (base64Image) => {
+            //create a img property on the Note object and assign the base64 to it
+            let updatedNote = { ...note, imgSrc: base64Image };
+            handleUpdateNote(updatedNote, note.id);
+            handleToggleContextMenu();
+          });
         } else alert(`${input.files[0].name} has an invalid file type`);
       } else alert("No files selected");
     },
