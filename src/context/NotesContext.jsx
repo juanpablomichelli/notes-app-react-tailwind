@@ -10,14 +10,18 @@ export const NotesProvider = ({ children }) => {
   //Fetch notes
   useEffect(() => {
     //check if key exist
-    if (storage.getItem("notes").length > 0) {
-      //set [notes]
-      const data = JSON.parse(storage.getItem("notes"));
-      setNotes([...data]);
-      setIsLoading(false);
-    } else {
-      //set new key
-      storage.setItem("notes", []);
+    try {
+      if (storage.getItem("notes").length > 0) {
+        //set [notes]
+        const data = JSON.parse(storage.getItem("notes"));
+        setNotes([...data]);
+        setIsLoading(false);
+      } else {
+        //set new key
+        storage.setItem("notes", []);
+      }
+    } catch (e) {
+      console.log(e);
     }
   }, []);
 
@@ -73,7 +77,13 @@ export const NotesProvider = ({ children }) => {
       if (idx >= 0) {
         const newNotes = [...prev];
         newNotes[idx] = { ...updatedNote };
-        storage.setItem("notes", JSON.stringify(newNotes));
+        try {
+          storage.setItem("notes", JSON.stringify(newNotes));
+        } catch (e) {
+          if (e.name === "QuotaExceededError")
+            alert("Storage limit exceeded. Unable to save this note.");
+          return prev;
+        }
         return newNotes;
       }
       return prev;
