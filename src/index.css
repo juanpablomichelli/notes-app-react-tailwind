@@ -10,3 +10,7 @@ body{
 .section{
   padding: 1rem;
 }
+
+.spinner{
+  border-radius: 50%;
+}

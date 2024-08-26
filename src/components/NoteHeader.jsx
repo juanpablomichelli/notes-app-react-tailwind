@@ -60,8 +60,9 @@ export default function NoteHeader({
         type="text"
         name="title"
         value={enteredTitle}
-        className="w-full outline-none overflow-hidden resize-none bg-orange-200 text-lg"
+        className="w-full outline-none overflow-hidden resize-none bg-orange-200 text-lg placeholder:text-orange-400"
         autoFocus={isNewNote}
+        placeholder="Add a title"
       />
     </header>
   );

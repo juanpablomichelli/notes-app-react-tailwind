@@ -12,14 +12,14 @@ function App() {
     <NotesProvider>
       <div
         id="page-container"
-        className="min-h-screen m-0 grid grid-rows-[auto_1fr] max-w-[1024px] mr-auto ml-auto  bg-orange-100"
+        className="min-h-screen m-0 grid grid-rows-[auto_1fr] max-w-[1024px] mr-auto ml-auto bg-orange-100 gap-2"
       >
-        <header className="section">
+        <header className="section flex flex-col items-center gap-2">
           <h1 className="text-3xl font-bold">Notes App</h1>
-          <span>{today}</span>
+          <span className="text-orange-500">{today}</span>
           <SearchBar />
         </header>
-        <main className="section">
+        <main className="section flex flex-col gap-8">
           <NotesList/>
           <NoteAdd />
         </main>

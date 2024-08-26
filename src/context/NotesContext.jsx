@@ -1,19 +1,22 @@
 import { createContext, useEffect, useState } from "react";
-import testNotes from "../test-notes";
 
 export const NotesContext = createContext();
 const storage = window.localStorage;
 
 export const NotesProvider = ({ children }) => {
   const [notes, setNotes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
+  //Fetch notes
   useEffect(() => {
     //check if key exist
     if (storage.getItem("notes").length > 0) {
-      //set notes
+      //set [notes]
       const data = JSON.parse(storage.getItem("notes"));
       setNotes([...data]);
+      setIsLoading(false);
     } else {
+      //set new key
       storage.setItem("notes", []);
     }
   }, []);
@@ -29,7 +32,7 @@ export const NotesProvider = ({ children }) => {
     let newNote = {
       id: id,
       title: "",
-      text: "Add your text here!",
+      text: "",
       pinned: false,
       background: "",
       imgSrc: undefined,
@@ -130,6 +133,7 @@ export const NotesProvider = ({ children }) => {
     handleNewlyAddedNote,
     handleTogglePin,
     handleFocusOut,
+    isLoading,
   };
 
   return (

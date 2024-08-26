@@ -35,7 +35,7 @@ export default function NoteContent({
           type="text"
           name="text"
           value={enteredText}
-          className="overflow-hidden outline-none resize-none bg-orange-200"
+          className="overflow-hidden outline-none resize-none bg-orange-200 placeholder:text-orange-400"
           placeholder="Start writing your note!"
         />
         {imgSrc && <img src={imgSrc} />}
