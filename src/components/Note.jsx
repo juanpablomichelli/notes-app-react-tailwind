@@ -103,7 +103,11 @@ export default function Note({ note, initialText, initialTitle }) {
   }
 
   return (
-    <article className="flex flex-col gap-2 relative border-2 rounded-lg p-2 bg-orange-200 border-black max-w-48">
+    <article
+      className={` ${
+        note.pinned ? "bg-blue-200" : "bg-orange-200"
+      } flex flex-col gap-2 relative border-2 rounded-lg p-2 border-black`}
+    >
       <NoteHeader
         onChange={handleInputChange}
         title={note.title}
@@ -125,6 +129,7 @@ export default function Note({ note, initialText, initialTitle }) {
         enteredText={enteredText}
         imgSrc={note.imgSrc}
         autoResizeTextArea={autoResizeTextArea}
+        isPinned={note.pinned}
       />
 
       {noteState.isContextMenuOpen && (

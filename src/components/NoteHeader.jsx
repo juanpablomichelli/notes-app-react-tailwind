@@ -60,7 +60,11 @@ export default function NoteHeader({
         type="text"
         name="title"
         value={enteredTitle}
-        className="w-full outline-none overflow-hidden resize-none bg-orange-200 text-lg placeholder:text-orange-400"
+        className={`${
+          isPinned
+            ? "bg-blue-200 placeholder:text-blue-400"
+            : "bg-orange-200 placeholder:text-orange-400"
+        } w-full outline-none overflow-hidden resize-none text-lg `}
         autoFocus={isNewNote}
         placeholder="Add a title"
       />

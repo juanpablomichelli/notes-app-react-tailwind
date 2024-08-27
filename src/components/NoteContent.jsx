@@ -6,6 +6,7 @@ export default function NoteContent({
   enteredText,
   imgSrc,
   autoResizeTextArea,
+  isPinned,
   ...props
 }) {
   useEffect(() => {
@@ -35,7 +36,11 @@ export default function NoteContent({
           type="text"
           name="text"
           value={enteredText}
-          className="overflow-hidden outline-none resize-none bg-orange-200 placeholder:text-orange-400"
+          className={`${
+            isPinned
+              ? "bg-blue-200 placeholder:text-blue-400"
+              : "bg-orange-200 placeholder:text-orange-400"
+          } overflow-hidden outline-none resize-none`}
           placeholder="Start writing your note!"
         />
         {imgSrc && <img src={imgSrc} />}

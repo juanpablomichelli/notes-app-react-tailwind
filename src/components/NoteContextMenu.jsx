@@ -17,11 +17,12 @@ export default function NoteContextMenu({
   useLayoutEffect(() => {
     //get vw
     let vw = window.innerWidth;
+    console.log(vw);
     //get x position of note or x position of menu's left client rect
-    let menuLeft = menuRef.current.getBoundingClientRect().left;
+    let menuRight = menuRef.current.getBoundingClientRect().right;
 
     setContextMenuStyle(() => {
-      if (menuLeft > vw / 2) {
+      if (menuRight > vw / 1.5) {
         return {
           right: "initial",
           left: "-20px",
