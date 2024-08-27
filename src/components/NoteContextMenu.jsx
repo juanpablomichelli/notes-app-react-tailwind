@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 export default function NoteContextMenu({
   isOpen,
@@ -8,6 +8,8 @@ export default function NoteContextMenu({
   menuRef,
   createImgUrl,
 }) {
+  const [contextMenuWidth, setContextMenuWidth] = useState(0);
+
   useEffect(() => {
     let fileRef = fileInputRef.current;
     const handleChange = (e) => {
@@ -20,14 +22,21 @@ export default function NoteContextMenu({
     };
   }, [createImgUrl, fileInputRef]);
 
+  useLayoutEffect(() => {
+    if (isOpen && menuRef.current) {
+      setContextMenuWidth(() => {
+        return menuRef.current.offsetWidth;
+      });
+    }
+  }, []);
+
+  let menuStyle = { right: `-${contextMenuWidth}px` };
   const liClass = "hover:bg-orange-200 pl-2";
+  const menuClass = `absolute w-full min-w-[150px] bg-orange-100 border-2 border-black rounded-lg top-[-2px] z-10 text-sm md:text-base`;
   return (
     <>
       {isOpen && (
-        <menu
-          ref={menuRef}
-          className="absolute w-full bg-orange-100 border-2 border-black rounded-lg top-[-10px] right-[-12rem] z-10"
-        >
+        <menu ref={menuRef} className={menuClass} style={menuStyle}>
           <li className={liClass}>
             <input
               ref={fileInputRef}
