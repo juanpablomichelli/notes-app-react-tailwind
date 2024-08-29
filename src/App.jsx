@@ -26,6 +26,7 @@ function App() {
           <NotesList searchValue={searchValue} />
           <NoteAdd />
         </main>
+        <div className="h-16"></div>
       </div>
     </NotesProvider>
   );

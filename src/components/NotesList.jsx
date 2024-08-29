@@ -11,7 +11,7 @@ export default function NotesList({ searchValue }) {
     default: 4,
     840: 3,
     640: 2,
-    425: 1,
+    374: 1,
   };
 
   const items = notes

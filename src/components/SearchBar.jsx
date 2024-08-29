@@ -20,7 +20,7 @@ export default function SearchBar({ setSearchValue }) {
   }, [inputValue]);
 
   return (
-    <div className="w-1/2 relative">
+    <div className="md:w-1/2 w-3/4 relative">
       <input
         type="text"
         placeholder="Search notes"

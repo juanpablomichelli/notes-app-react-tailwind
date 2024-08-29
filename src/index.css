@@ -5,6 +5,7 @@
 body{
   box-sizing: border-box;
   margin: 0;
+  background-color: #FED6AA;
 }
 
 .section{
@@ -13,4 +14,10 @@ body{
 
 .spinner{
   border-radius: 50%;
+}
+
+@media only screen and (min-width: 374px) and (max-width: 414px) {
+  .note{
+    width: 150px;
+  }
 }

@@ -104,9 +104,9 @@ export default function Note({ note, initialText, initialTitle }) {
 
   return (
     <article
-      className={` ${
+      className={`note ${
         note.pinned ? "bg-blue-200" : "bg-orange-200"
-      } flex flex-col gap-2 relative border-2 rounded-lg p-2 border-black`}
+      } flex flex-col gap-2 relative border-2 rounded-lg p-2 border-black w-full mr-auto ml-auto`}
     >
       <NoteHeader
         onChange={handleInputChange}
