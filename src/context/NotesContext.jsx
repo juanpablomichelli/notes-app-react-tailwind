@@ -15,7 +15,6 @@ export const NotesProvider = ({ children }) => {
         //set [notes]
         const data = JSON.parse(storage.getItem("notes"));
         setNotes([...data]);
-        setIsLoading(false);
       } else {
         //set new key
         storage.setItem("notes", []);
@@ -23,6 +22,7 @@ export const NotesProvider = ({ children }) => {
     } catch (e) {
       console.log(e);
     }
+    setIsLoading(false);
   }, []);
 
   const getIndex = (array, id) => {

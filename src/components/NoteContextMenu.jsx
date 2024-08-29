@@ -49,7 +49,7 @@ export default function NoteContextMenu({
   }, [createImgUrl, fileInputRef]);
 
   const liClass = "hover:bg-orange-200 pl-2";
-  const menuClass = `absolute w-full min-w-[150px] bg-orange-100 border-2 border-black rounded-lg top-[-2px] z-10 text-sm md:text-base`;
+  const menuClass = `absolute w-full min-w-[150px] bg-orange-100 outline outline-2 outline-black rounded-lg top-[-2px] z-10 text-sm md:text-base`;
   return (
     <>
       {isOpen && (
@@ -61,16 +61,14 @@ export default function NoteContextMenu({
               accept="image/*"
               style={{ display: "none" }}
             />
-            <button onClick={onInsertImage}>Insert Image</button>
+            <button onClick={onInsertImage} className="w-full text-left">
+              Insert Image
+            </button>
           </li>
           <li className={liClass}>
-            <button>Insert List</button>
-          </li>
-          <li className={liClass}>
-            <button>Change Background</button>
-          </li>
-          <li className={liClass}>
-            <button onClick={onDelete}>Delete Note</button>
+            <button onClick={onDelete} className="w-full text-left">
+              Delete Note
+            </button>
           </li>
         </menu>
       )}
