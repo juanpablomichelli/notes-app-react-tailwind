@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./App.css";
 import NoteAdd from "./components/NoteAdd";
 import NotesList from "./components/NotesList";
@@ -8,6 +9,8 @@ function App() {
   // 📄 Date Docs https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
   const today = new Date().toDateString();
 
+  const [searchValue, setSearchValue] = useState("");
+
   return (
     <NotesProvider>
       <div
@@ -17,10 +20,10 @@ function App() {
         <header className="section flex flex-col items-center gap-2">
           <h1 className="text-3xl font-bold">Notes App</h1>
           <span className="text-orange-500">{today}</span>
-          <SearchBar />
+          <SearchBar setSearchValue={setSearchValue} />
         </header>
         <main className="section flex flex-col gap-8">
-          <NotesList/>
+          <NotesList searchValue={searchValue} />
           <NoteAdd />
         </main>
       </div>

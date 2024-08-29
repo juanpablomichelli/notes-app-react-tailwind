@@ -4,7 +4,7 @@ import { NotesContext } from "../context/NotesContext";
 import LoadingSpinner from "./LoadingSpinner";
 import Masonry from "react-masonry-css";
 
-export default function NotesList() {
+export default function NotesList({ searchValue }) {
   const { notes, isLoading } = useContext(NotesContext);
 
   const breakpointColumnsObj = {
@@ -14,11 +14,17 @@ export default function NotesList() {
     425: 1,
   };
 
-  const items = notes.map((note) => (
-    <li key={note.id} className="list-none w-full">
-      <Note note={note} initialTitle={note.title} initialText={note.text} />
-    </li>
-  ));
+  const items = notes
+    .filter(
+      (note) =>
+        note.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+        note.text.toLowerCase().includes(searchValue.toLowerCase())
+    )
+    .map((note) => (
+      <li key={note.id} className="list-none w-full">
+        <Note note={note} initialTitle={note.title} initialText={note.text} />
+      </li>
+    ));
 
   return (
     <>

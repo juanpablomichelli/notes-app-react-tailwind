@@ -1,26 +1,32 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; //Import component
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"; //Import icon
+import { useEffect, useState } from "react";
 
-export default function SearchBar() {
-  function searchBarFunc(){
-    //steps
-
-    /* 
-    1 - User enters value
-    2 - Input listens for value change
-      2.1 - will it listen for note title, text or both? 
-    3 - Results are revealed in real-time
-    
-    
-    */
-    console.log("search-bar")
+export default function SearchBar({ setSearchValue }) {
+  const [inputValue, setInputValue] = useState("");
+  function handleChange(e) {
+    setInputValue(e.target.value);
   }
+
+  //Debouncing
+  useEffect(() => {
+    const setSearchTimer = setTimeout(() => {
+      setSearchValue(inputValue);
+    }, 100);
+
+    return () => {
+      clearTimeout(setSearchTimer);
+    };
+  }, [inputValue]);
+
   return (
-    <div className="w-1/2 relative bg-orange-400">
+    <div className="w-1/2 relative">
       <input
         type="text"
         placeholder="Search notes"
         className="p-2 w-full border-black border-2 rounded-md"
+        onChange={handleChange}
+        value={inputValue}
       ></input>
       <FontAwesomeIcon
         icon={faMagnifyingGlass}
