@@ -2,26 +2,17 @@ import { createContext, useEffect, useState } from "react";
 
 export const NotesContext = createContext();
 const storage = window.localStorage;
+let storageNotes = [];
+
+if (storage.getItem("notes")) {
+  storageNotes = JSON.parse(storage.getItem("notes"));
+} else storage.setItem("notes", []);
 
 export const NotesProvider = ({ children }) => {
-  const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState(storageNotes);
   const [isLoading, setIsLoading] = useState(true);
 
-  //Fetch notes
   useEffect(() => {
-    //check if key exist
-    try {
-      if (storage.getItem("notes").length > 0) {
-        //set [notes]
-        const data = JSON.parse(storage.getItem("notes"));
-        setNotes([...data]);
-      } else {
-        //set new key
-        storage.setItem("notes", []);
-      }
-    } catch (e) {
-      console.log(e);
-    }
     setIsLoading(false);
   }, []);
 
